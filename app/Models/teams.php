@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class teams extends Model
+{
+    use \Illuminate\Database\Eloquent\SoftDeletes;
+    protected $table = 'teams';
+    protected $fillable = [
+        'name',
+        'team_leader_id',
+    ];
+    public static function booted()
+    {
+        static::creating(function ($model) {
+            $model->created_by = auth()->id();
+        });
+
+        static::updating(function ($model) {
+            $model->updated_by = auth()->id();
+        });
+
+        static::deleting(function ($model) {
+            $model->deleted_by = auth()->id();
+            $model->save();
+        });
+    }
+
+
+}
