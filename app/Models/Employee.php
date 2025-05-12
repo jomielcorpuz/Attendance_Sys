@@ -5,13 +5,16 @@ namespace App\Models;
 use \Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class employees extends Model
+class Employee extends Model
 {
     use SoftDeletes;
     protected $table = 'employees';
     protected $fillable = [
         'name',
+        'nickname',
+        'gender',
         'email',
+        'start_date',
         'team_id',
         'rate_per_hour',
         'user_id',

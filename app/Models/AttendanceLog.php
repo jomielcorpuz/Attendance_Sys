@@ -20,6 +20,7 @@ class AttendanceLog extends Model
         'rendered_hours',
         'earned_amount',
         'logged_by',
+        'created_by',
         'notes',
     ];
 

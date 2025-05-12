@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +23,8 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('Attendance', [AttendanceController::class, 'index'])->name('Attendance.index');
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendancepanel.attendance');
+    Route::get('/employee', [EmployeeController::class, 'index'])->name('employeepanel.employee');
 
 });
 
