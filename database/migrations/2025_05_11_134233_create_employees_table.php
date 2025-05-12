@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('nickname');
+            $table->string('gender');
             $table->string('email')->unique();
             $table->foreignId('team_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('rate_per_hour', 8, 2);
             $table->unique('user_id');
             $table->string('employee_number')->unique();
+            $table->string('start_date')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
 
             $table->timestamps();
