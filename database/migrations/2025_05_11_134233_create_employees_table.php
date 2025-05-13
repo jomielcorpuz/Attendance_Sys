@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('nickname');
             $table->string('gender');
+            $table->string('position');
+            $table->string('status');
             $table->string('email')->unique();
             $table->foreignId('team_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('rate_per_hour', 8, 2);
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->string('start_date')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
 
+            $table->softDeletes();
             $table->timestamps();
         });
 
