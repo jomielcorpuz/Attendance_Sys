@@ -10,7 +10,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/Components/ui/table"
+} from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/Components/ui/breadcrumb";
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,7 +32,7 @@ interface Employee {
     team_id: string;
     rate_per_hour: string;
     user_id: string;
-    status: string;
+    status: "Active" | "Inactive" | "Scheduled" | "Settled";
     employee_number: string;
     created_at: Date;
     created_by: string;
@@ -52,6 +52,8 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
 
     const [selectedEmployeeID, setSelectedEmployeeID] = React.useState<number[]>([])
     const [isPanelOpen, setIsPanelOpen] = React.useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [selectedDelete, setSelectedDelete] = React.useState<Employee | null>(null);
 
     const handleRowClick = (employee: Employee) => {
         setSelectedEmployee(employee);
@@ -71,6 +73,10 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
         );
     };
 
+    const handleDeleteClick = (employee: Employee) => {
+        setSelectedDelete(employee);
+        setDeleteDialogOpen(true);
+    };
     return (
         <Authenticated>
             <div className='p-6'>
@@ -129,8 +135,8 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody >
-                                {employee_data.length > 0 ? (
-                                    employee_data.map((employee: Employee) => (
+                                {employee.length > 0 ? (
+                                    employee.map((employee: Employee) => (
                                         <TableRow
                                             key={employee.id}
                                             className='transition-all duration-100 '>
