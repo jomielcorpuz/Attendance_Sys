@@ -3,11 +3,12 @@ import { ChartAreaInteractive } from "@/Components/chart-area-interactive"
 import { DataTable } from "@/Components/data-table"
 import { SectionCards } from "@/Components/section-cards"
 import { SiteHeader } from "@/Components/site-header"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
 import data from "../../../app/dashboard/data.json"
+import Navbar from "@/Components/Navbar"
 export default function Authenticated({
     header,
     children,
@@ -21,6 +22,7 @@ export default function Authenticated({
         <SidebarProvider>
             <AppSidebar variant="inset" />
             <SidebarInset>
+                <Navbar />
                 <main className=" bg-white">
                     {children}
                 </main>
