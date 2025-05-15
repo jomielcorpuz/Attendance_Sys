@@ -21,10 +21,25 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->foreignId('team_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('rate_per_hour', 8, 2);
-            $table->unique('user_id');
+
             $table->string('employee_number')->unique();
             $table->string('start_date')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table
+            ->foreignId('user_id')
+            ->nullable()
+            ->constrained()
+            ->nullOnDelete()
+            ->unique();
+
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('deleted_by')->references('id')->on('users')->onDelete('cascade');
+
+            $table->string('ip_address')->nullable();
 
             $table->softDeletes();
             $table->timestamps();
@@ -37,6 +52,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('employees', function (Blueprint $table) {
+        $table->dropForeign(['team_id']);
+        $table->dropForeign(['user_id']);
+    });
         Schema::dropIfExists('employees');
     }
 };
