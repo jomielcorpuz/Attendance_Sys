@@ -119,15 +119,15 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
                         <Table className="w-full  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 
                             <TableHeader>
-                                <TableRow>
+                                <TableRow className='text-md '>
                                     <TableHead >
                                         <Checkbox
                                         />
                                     </TableHead>
-                                    <TableHead >Title</TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'> Name</TableHead>
-                                    <TableHead> <div className='flex justify-start items-center gap-2'>  Nickname </div></TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'> Team</TableHead>
+                                    <TableHead >Full Name</TableHead>
+                                    <TableHead className='flex justify-start items-center gap-2'> Nickname</TableHead>
+                                    <TableHead> <div className='flex justify-start items-center gap-2'>  Team </div></TableHead>
+                                    <TableHead className='flex justify-start items-center gap-2'> Salary rate</TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Date Created</div></TableHead>
                                     <TableHead className='flex justify-start items-center gap-2'> Status</TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2'>   Provider </div></TableHead>
@@ -139,7 +139,7 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
                                     employee.map((employee: Employee) => (
                                         <TableRow
                                             key={employee.id}
-                                            className='transition-all duration-100 '>
+                                            className='transition-all duration-100 text-md'>
                                             <TableCell >
 
                                             </TableCell>

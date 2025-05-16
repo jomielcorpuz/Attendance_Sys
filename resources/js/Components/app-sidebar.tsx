@@ -2,6 +2,7 @@ import * as React from "react"
 import {
     ArrowUpCircleIcon,
     BarChartIcon,
+    CalendarClock,
     CameraIcon,
     ClipboardListIcon,
     DatabaseIcon,
@@ -79,12 +80,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             },
             {
-                title: "Analytics",
-                url: "#",
-                icon: BarChartIcon,
+                title: "Attendance",
+                url: route('attendancepanel.attendance'),
+                icon: CalendarClock,
             },
             {
-                title: "Projects",
+                title: "Tasks",
                 url: "#",
                 icon: FolderIcon,
             },
@@ -94,54 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 icon: UsersIcon,
             },
         ],
-        navClouds: [
-            {
-                title: "Capture",
-                icon: CameraIcon,
-                isActive: true,
-                url: "#",
-                items: [
-                    {
-                        title: "Active Proposals",
-                        url: "#",
-                    },
-                    {
-                        title: "Archived",
-                        url: "#",
-                    },
-                ],
-            },
-            {
-                title: "Proposal",
-                icon: FileTextIcon,
-                url: "#",
-                items: [
-                    {
-                        title: "Active Proposals",
-                        url: "#",
-                    },
-                    {
-                        title: "Archived",
-                        url: "#",
-                    },
-                ],
-            },
-            {
-                title: "Prompts",
-                icon: FileCodeIcon,
-                url: "#",
-                items: [
-                    {
-                        title: "Active Proposals",
-                        url: "#",
-                    },
-                    {
-                        title: "Archived",
-                        url: "#",
-                    },
-                ],
-            },
-        ],
+
         navSecondary: [
             {
                 title: "Settings",
@@ -170,11 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 url: "#",
                 icon: ClipboardListIcon,
             },
-            {
-                name: "Word Assistant",
-                url: "#",
-                icon: FileIcon,
-            },
+
         ],
     }
 

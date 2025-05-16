@@ -5,6 +5,7 @@ function Attendance() {
     return (
         <Authenticated>
 
+
         </Authenticated>
     )
 }
