@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmployeeResources;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -9,7 +10,8 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $query = Employee::query();
+        $query = Employee::with('department');
+
         $sortField = request("sort_field", 'id');
         $sortDirection = request("sort_direction", "asc");
 
@@ -19,8 +21,8 @@ class AttendanceController extends Controller
         if (request("id")) {
             $query->where("id", request("id"));
         }
-        if (request("rate_per_hour")) {
-            $query->where("rate_per_hour", request("rate_per_hour"));
+        if (request("department")) {
+            $query->where("department", request("department"));
         }
 
         $employee_data_all = $query->orderBy($sortField, $sortDirection)->get();
@@ -74,5 +76,25 @@ class AttendanceController extends Controller
             'message' => 'Attendance recorded successfully!',
             'attendance' => $attendance,
         ], 201);
+    }
+
+        public function fetchEmployee(Request $request)
+    {
+        $perPage = request("per_page", 10);
+        $employeQuery = Employee::with('department');
+
+        $employee = $employeQuery->paginate($perPage);
+
+        return response()->json([
+            'data' => EmployeeResources::collection($employee),
+            'pagination_employee' => [
+                "links" => array_values($employee->linkCollection()->toArray()),
+                'current_page' => $employee->currentPage(),
+                'from' => $employee->firstItem(),
+                'to' => $employee->lastItem(),
+                'total' => $employee->total(),
+                'last_page' => $employee->lastPage(),
+            ],
+        ]);
     }
 }

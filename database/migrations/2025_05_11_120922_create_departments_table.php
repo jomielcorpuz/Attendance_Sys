@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teams', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('team_leader_id')->nullable();
-           $table->foreignId('department_id')
-            ->nullable()
-            ->constrained('departments')
-            ->onDelete('cascade');
+            $table->string('name')->unique();
+            $table->text('description')->nullable();
 
-
+               // Record-keeping
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -34,18 +30,13 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-
-
     }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-    {Schema::table('teams', function (Blueprint $table) {
-    $table->dropForeign(['team_leader_id']);
-    });
-
-        Schema::dropIfExists('teams');
+    {
+        Schema::dropIfExists('departments');
     }
-    };
+};

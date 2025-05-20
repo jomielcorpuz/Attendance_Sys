@@ -11,6 +11,27 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+         $departments = collect([
+        'Operations',
+        'Customer Service',
+        'Finance',
+        'IT',
+        ]);
+
+        $departments->each(function ($dept) {
+        \App\Models\Department::create(['name' => $dept]);
+        });
+
+         $operations = \App\Models\Department::where('name', 'Operations')->first();
+        \App\Models\Team::factory(9)->create(['department_id' => $operations->id]);
+
+
+        $customerService = \App\Models\Department::where('name', 'Customer Service')->first();
+        \App\Models\Team::factory()->create(['department_id' => $customerService->id]);
+
+        $this->call(EmployeeSeeder::class);
+
+
         User::factory(10)->create();
 
         // Create teams first
@@ -22,8 +43,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Then call EmployeeSeeder
-        $this->call(EmployeeSeeder::class);
+
+
+
+
     }
 }
 

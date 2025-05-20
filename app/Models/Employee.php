@@ -21,6 +21,12 @@ class Employee extends Model
         'user_id',
         'employee_number',
     ];
+
+    public function department()
+    {
+    return $this->belongsTo(Department::class);
+    }
+
     public static function booted()
     {
         static::creating(function ($model) {

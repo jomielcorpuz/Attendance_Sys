@@ -25,6 +25,7 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendancepanel.attendance');
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employeepanel.employee');
+    Route::get('/api/employee', [EmployeeController::class, 'fetchEmployee'])->name('api.employee');
 
 });
 

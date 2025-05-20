@@ -15,6 +15,7 @@ class Team extends Model
         'name',
         'team_leader_id',
     ];
+
     public static function booted()
     {
         static::creating(function ($model) {
@@ -31,5 +32,9 @@ class Team extends Model
         });
     }
 
+public function department()
+    {
+    return $this->belongsTo(Department::class);
+    }
 
 }

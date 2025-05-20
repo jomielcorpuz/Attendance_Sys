@@ -1,35 +1,30 @@
-"use client"
-import Authenticated from '@/Layouts/AuthenticatedLayout'
-import React from 'react'
-
+import React, { useCallback, useEffect } from 'react'
+import { Calendar, Ellipsis, EllipsisVertical, MapPin, PenLine, Pin, X } from 'lucide-react';
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/Components/ui/breadcrumb";
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Eye, PencilLine, Trash2 } from 'lucide-react';
-import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP } from '@/constants';
-import PaginateRes from '@/Components/PaginateRes';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP, EVENT_STATUS_CLASS_MAP, EVENT_STATUS_TEXT_MAP } from '@/constants';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import Checkbox from '@/Components/Checkbox';
+import PaginateRes from '@/Components/PaginateRes';
 
 
-interface Department {
-    id: number;
-    name: string;
-    description?: string;
-}
 
 interface Employee {
     id: number;
@@ -49,70 +44,105 @@ interface Employee {
     created_by: string;
 }
 
-interface EmployeeProps {
-    employee_data: {
-        data: Employee[];
-        links: any;
-        meta: any;
-    };
-    pagination_employee: any;
-    queryParams: any;
-}
 
 
-function Attendance({ employee_data, pagination_employee, queryParams: initialQueryParams }: EmployeeProps) {
-    const employee = employee_data.data || [];
-
-    const [activeTab, setActiveTab] = React.useState("employee");
-    const [queryParams, setQueryParams] = React.useState(initialQueryParams || {});
-    const [search, setSearch] = React.useState(queryParams.fullname || "");
-    const [selectedEmployee, setSelectedEmployee] = React.useState<Employee | null>(null);
-
-    const [selectedEmployeeID, setSelectedEmployeeID] = React.useState<number[]>([])
-    const [isPanelOpen, setIsPanelOpen] = React.useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-    const [selectedDelete, setSelectedDelete] = React.useState<Employee | null>(null);
-
-    const handleRowClick = (employee: Employee) => {
-        setSelectedEmployee(employee);
-        setIsPanelOpen(true);
-    };
-
-    const handleClosePanel = () => {
-        setIsPanelOpen(false);
-        setSelectedEmployee(null);
-    };
-
-    const handleSelectedEmployee = (employeeID: number) => {
-        setSelectedEmployeeID(prev =>
-            prev.includes(employeeID)
-                ? prev.filter(id => id !== employeeID)
-                : [...prev, employeeID]
-        );
-    };
+function EmployeeList() {
+    const [events, setEvents] = React.useState<Employee[]>([]);
+    const [nextUrl, setNextUrl] = React.useState<string | null>(null);
+    const [loading, setLoading] = React.useState(false);
+    const observerRef = React.useRef<HTMLDivElement | null>(null);
+    const [activeTab, setActiveTab] = React.useState("all");
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [sortValue, setSortValue] = React.useState("all");
 
     const handleTabChange = (tab: string) => {
-        setActiveTab(tab);      // Update the active tab
-        setSearch("");     // Clear search input when switching tabs
-        setQueryParams({});
+        setActiveTab(tab);      // Update active tab
+        setSearchQuery("");          // Clear search input
+        setEvents([]);          // Reset events list when switching tabs
+        setNextUrl(null);       // Reset pagination URL so it fetches again
+        fetchEvents();          // Trigger fetch for the new tab
     };
-    const handleDeleteClick = (employee: Employee) => {
-        setSelectedDelete(employee);
-        setDeleteDialogOpen(true);
+
+
+    // Filter events based on active tab and search input
+    const filteredEvents = events
+        .filter((event) => activeTab === "all" || event.status.toLowerCase() === activeTab.toLowerCase())
+        .filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+
+    const fetchEvents = async (url = "/api/pwd-events", append = false) => {
+        setLoading(true);
+        try {
+            const response = await fetch(url, { headers: { Accept: "application/json" } });
+            const data = await response.json();
+
+            if (data?.data && Array.isArray(data.data)) {
+                setEvents((prev) => (append ? [...prev, ...data.data] : data.data));
+                setNextUrl(data.links?.find((link: any) => link.label.includes("Next"))?.url || null);
+            }
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        } finally {
+            setLoading(false);
+        }
     };
+
+
+    // Fetch initial events when component mounts
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    // Infinite Scroll: Fetch next page when in view
+    const loadMore = useCallback(() => {
+        if (!nextUrl || loading) return; // Stop if no more pages or still loading
+        fetchEvents(nextUrl, true,);
+    }, [nextUrl, loading]);
+
+
+    useEffect(() => {
+        if (!nextUrl) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    loadMore();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerRef.current) {
+            observer.observe(observerRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [nextUrl, loadMore]);
+
+
+
+    const handleSort = (value: string) => {
+
+    }
 
     return (
-        <Authenticated>
-
-            <Tabs defaultValue='employee' className='p-4'>
-                <TabsList className='p-2 space-x-2'>
-                    <TabsTrigger value='employee' onClick={() => handleTabChange("employee")} className='text-md  data-[state=active]:text-gray-700 rounded-lg text-gray-700 hover:rounded-lg hover:bg-white hover:text-gray-700  transition-all  duration-150 '> Employee</TabsTrigger>
-                    <TabsTrigger value='attendance' onClick={() => handleTabChange("attendance")} className='text-md data-[state=active]:text-gray-700 rounded-lg text-gray-700 hover:rounded-lg hover:bg-white hover:text-gray-700  transition-all  duration-150 '> Attendance</TabsTrigger>
-
-
+        <div>
+            <Tabs
+                defaultValue='all' className='py-8'>
+                <TabsList className='w-full justify-start bg-white gap-2'>
+                    {["all", "Ongoing", "Planned", "Completed", "Cancelled"].map((status) => (
+                        <TabsTrigger
+                            key={status}
+                            value={status}
+                            onClick={() => handleTabChange(status.toLowerCase())} // Call handleTabChange
+                            className="rounded-full data-[state=active]:bg-blue-400 data-[state=active]:text-white"
+                        >
+                            {status.charAt(0).toUpperCase() + status.slice(1)} {/* Capitalize */}
+                        </TabsTrigger>
+                    ))}
                 </TabsList>
 
-                <TabsContent value='employee'>
+                <TabsContent value="all" className='py-8'>
                     <Card className="mt-6 lg:col-span-2 sm: col-span-1 ">
                         <div className="p-4 ">
                             <h2 className="mb-4 font-semibold text-xl text-gray-800">Employee List</h2>
@@ -184,11 +214,16 @@ function Attendance({ employee_data, pagination_employee, queryParams: initialQu
                         </div>
                     </Card >
                 </TabsContent>
+
+
+
+
+
+
             </Tabs>
+        </div>
 
-
-        </Authenticated>
     )
 }
 
-export default Attendance
+export default EmployeeList

@@ -20,6 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Eye, PencilLine, Trash2 } from 'lucide-react';
 import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP } from '@/constants';
+import PaginateRes from '@/Components/PaginateRes';
 
 interface Employee {
     id: number;
@@ -201,7 +202,7 @@ function Employee({ employee_data, pagination }: EmployeeProps) {
 
                         </Table>
                     </div>
-
+                    <PaginateRes pagination={pagination} />
                 </div>
             </Card >
 

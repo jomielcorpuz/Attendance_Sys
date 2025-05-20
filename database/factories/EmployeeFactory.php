@@ -16,6 +16,7 @@ class EmployeeFactory extends Factory
 
     public function definition(): array
     {
+          $team = Team::inRandomOrder()->first();
         return [
             'name' => $this->faker->name,
             'nickname' => $this->faker->firstName,
@@ -23,7 +24,8 @@ class EmployeeFactory extends Factory
             'position' => $this->faker->jobTitle,
             'status' => $this->faker->randomElement(['Active', 'Inactive']),
             'email' => $this->faker->unique()->safeEmail,
-            'team_id' => Team::inRandomOrder()->first()?->id,
+             'team_id' => $team?->id,
+             'department_id' => $team?->department_id,
             'rate_per_hour' => $this->faker->randomFloat(2, 100, 1000),
             'user_id' => User::inRandomOrder()->first()?->id,
             'employee_number' => $this->faker->unique()->numerify('EMP-####'),

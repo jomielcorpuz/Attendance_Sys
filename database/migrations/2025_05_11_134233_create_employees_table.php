@@ -21,6 +21,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->foreignId('team_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('rate_per_hour', 8, 2);
+           $table->foreignId('department_id')
+            ->nullable()
+            ->constrained('departments')
+            ->onDelete('cascade');
+
 
             $table->string('employee_number')->unique();
             $table->string('start_date')->nullable();
