@@ -78,7 +78,7 @@ class AttendanceController extends Controller
         ], 201);
     }
 
-        public function fetchEmployee(Request $request)
+    public function fetchEmployee(Request $request)
     {
         $perPage = request("per_page", 10);
         $employeQuery = Employee::with('department');

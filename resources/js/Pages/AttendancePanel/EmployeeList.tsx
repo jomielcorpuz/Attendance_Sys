@@ -26,6 +26,13 @@ import PaginateRes from '@/Components/PaginateRes';
 
 
 
+
+interface Department {
+    id: number;
+    name: string;
+    description?: string;
+}
+
 interface Employee {
     id: number;
     name: string;
@@ -47,56 +54,83 @@ interface Employee {
 
 
 function EmployeeList() {
-    const [events, setEvents] = React.useState<Employee[]>([]);
+    const [employee, setEmployee] = React.useState<Employee[]>([]);
     const [nextUrl, setNextUrl] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const observerRef = React.useRef<HTMLDivElement | null>(null);
     const [activeTab, setActiveTab] = React.useState("all");
     const [searchQuery, setSearchQuery] = React.useState("");
     const [sortValue, setSortValue] = React.useState("all");
+    const [isPanelOpen, setIsPanelOpen] = React.useState(false);
+    const [selectedEmployee, setSelectedEmployee] = React.useState<Employee | null>(null);
+    const [pagination, setPagination] = React.useState<any | null>(null);
+
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);      // Update active tab
         setSearchQuery("");          // Clear search input
-        setEvents([]);          // Reset events list when switching tabs
+        setEmployee([]);          // Reset events list when switching tabs
         setNextUrl(null);       // Reset pagination URL so it fetches again
-        fetchEvents();          // Trigger fetch for the new tab
+        fetchEmployee();          // Trigger fetch for the new tab
+    };
+
+    const handleRowClick = (employee: Employee) => {
+        setSelectedEmployee(employee);
+        setIsPanelOpen(true);
     };
 
 
     // Filter events based on active tab and search input
-    const filteredEvents = events
-        .filter((event) => activeTab === "all" || event.status.toLowerCase() === activeTab.toLowerCase())
-        .filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredEvents = employee
+        .filter((employee) => activeTab === "all" || employee.status.toLowerCase() === activeTab.toLowerCase())
+        .filter((employee) => employee.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
 
-    const fetchEvents = async (url = "/api/pwd-events", append = false) => {
+    const fetchEmployee = async (url = "/api/employee", append = false) => {
+        const queryParams = new URLSearchParams();
+        queryParams.set("per_page", "10");
+        if (searchQuery) queryParams.set("name", searchQuery);
+        if (activeTab !== "all") queryParams.set("status", activeTab);
+
+        const finalUrl = url.includes("?") ? url + "&" + queryParams.toString() : url + "?" + queryParams.toString();
+
         setLoading(true);
         try {
-            const response = await fetch(url, { headers: { Accept: "application/json" } });
+            const response = await fetch(finalUrl, { headers: { Accept: "application/json" } });
             const data = await response.json();
 
             if (data?.data && Array.isArray(data.data)) {
-                setEvents((prev) => (append ? [...prev, ...data.data] : data.data));
-                setNextUrl(data.links?.find((link: any) => link.label.includes("Next"))?.url || null);
+                setEmployee((prev) => (append ? [...prev, ...data.data] : data.data));
             }
+
+            if (data?.pagination_employee) {
+                setPagination(data.pagination_employee);
+            }
+
+            setNextUrl(
+                data.pagination_employee?.links?.find((link: any) =>
+                    link.label.toLowerCase().includes("next")
+                )?.url || null
+            );
         } catch (error) {
-            console.error("Error fetching events:", error);
+            console.error("Error fetching employee:", error);
         } finally {
             setLoading(false);
         }
     };
 
 
+
+
     // Fetch initial events when component mounts
     useEffect(() => {
-        fetchEvents();
+        fetchEmployee();
     }, []);
 
     // Infinite Scroll: Fetch next page when in view
     const loadMore = useCallback(() => {
         if (!nextUrl || loading) return; // Stop if no more pages or still loading
-        fetchEvents(nextUrl, true,);
+        fetchEmployee(nextUrl, true,);
     }, [nextUrl, loading]);
 
 
@@ -210,7 +244,9 @@ function EmployeeList() {
 
                                 </Table>
                             </div>
-                            <PaginateRes pagination={pagination_employee} />
+                            {pagination && <PaginateRes pagination={pagination} />}
+
+
                         </div>
                     </Card >
                 </TabsContent>
