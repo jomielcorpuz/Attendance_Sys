@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WorksheetController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendancepanel.attendance');
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employeepanel.employee');
     Route::get('/api/employee', [EmployeeController::class, 'fetchEmployee'])->name('api.employee');
+
+
+    Route::get('/worksheets', [WorksheetController::class, 'index'])->name('worksheetpanel.worksheet');
+    Route::get('/clients', [ClientController::class, 'index'])->name('clientpanel.client');
+    Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentialspanel.credential');
 
 });
 

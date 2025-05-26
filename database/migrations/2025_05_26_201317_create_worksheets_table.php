@@ -14,9 +14,11 @@ return new class extends Migration
        Schema::create('worksheets', function (Blueprint $table) {
         $table->id();
         $table->string('worksheet_name');
-        $table->foreignId('client_id')->constrained();
-        $table->foreignId('cloudflare_credential_id')->nullable()->constrained('credentials');
-        $table->foreignId('googlepanel_credential_id')->nullable()->constrained('credentials');
+        $table->foreignId('client_id')->nullable();
+        $table->string('cloudflare_username')->nullable();
+        $table->string('googlepanel_username')->nullable();
+        $table->foreignId('cloudflare_credential_id')->nullable();
+        $table->foreignId('googlepanel_credential_id')->nullable();
         $table->integer('no_of_domains')->default(0);
         $table->integer('no_of_users_per_domain')->default(0);
         $table->integer('total_users')->default(0);

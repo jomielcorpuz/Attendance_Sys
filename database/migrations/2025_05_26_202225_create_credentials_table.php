@@ -16,6 +16,8 @@ return new class extends Migration
         $table->string('username');
         $table->string('password');
         $table->string('status');
+        $table->string('description');
+        $table->string('organization_name');
         $table->string('label'); // e.g., "Cloudflare", "Google Panel"
 
 

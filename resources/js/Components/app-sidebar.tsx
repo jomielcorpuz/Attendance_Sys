@@ -81,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: "Worksheets",
-                url: route('employeepanel.employee'),
+                url: route('worksheetpanel.worksheet'),
                 icon: ListIcon,
                 isActive: isRouteActive('employee'),
 
