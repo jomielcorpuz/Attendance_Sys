@@ -73,6 +73,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 isActive: isRouteActive('dashboard'),
             },
             {
+                title: "Orders",
+                url: route('employeepanel.employee'),
+                icon: ListIcon,
+                isActive: isRouteActive('employee'),
+
+            },
+            {
+                title: "Worksheets",
+                url: route('employeepanel.employee'),
+                icon: ListIcon,
+                isActive: isRouteActive('employee'),
+
+            },
+            {
+                title: "Panels",
+                url: route('employeepanel.employee'),
+                icon: ListIcon,
+                isActive: isRouteActive('employee'),
+
+            },
+            {
+                title: "Clients",
+                url: route('employeepanel.employee'),
+                icon: ListIcon,
+                isActive: isRouteActive('employee'),
+
+            },
+            {
                 title: "Employee",
                 url: route('employeepanel.employee'),
                 icon: ListIcon,
@@ -84,6 +112,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 url: route('attendancepanel.attendance'),
                 icon: CalendarClock,
             },
+
+            {
+                title: "Accomplishment",
+                url: route('employeepanel.employee'),
+                icon: ListIcon,
+                isActive: isRouteActive('employee'),
+
+            },
             {
                 title: "Tasks",
                 url: "#",
@@ -94,6 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 url: "#",
                 icon: UsersIcon,
             },
+
         ],
 
         navSecondary: [
