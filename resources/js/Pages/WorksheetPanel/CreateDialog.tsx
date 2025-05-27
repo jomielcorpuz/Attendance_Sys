@@ -33,7 +33,7 @@ const formSchema = z.object({
     tag: z.string().min(1, "Tag is required"),
     sheet_link: z.string().min(1, "Sheet link is required"),
     timestamp_cdt: z.coerce.date(),
-    //details: z.string().optional(),
+    details: z.string().optional(),
 });
 
 

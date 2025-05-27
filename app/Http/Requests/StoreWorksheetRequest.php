@@ -15,6 +15,7 @@ class StoreWorksheetRequest extends FormRequest
     {
         return [
             'worksheet_name' => ['nullable', 'string', 'max:255'],
+            'client_id' => ['nullable', 'string', 'max:255'],
             'cloudflare_username' => ['nullable', 'string', 'max:255'],
             'googlepanel_username' => ['nullable', 'string', 'max:255'],
 

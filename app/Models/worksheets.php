@@ -8,6 +8,7 @@ class Worksheets extends Model
 {
     protected $fillable = [
     'worksheet_name',
+    'client_id',
     'cloudflare_username',
     'googlepanel_username',
     'cloudflare_credential_id',
@@ -19,7 +20,8 @@ class Worksheets extends Model
     'tag',
     'sheet_link',
     'timestamp_cdt',
-    //'details',
+    'status',
+    'details',
     'created_by',
     'ip_address',
 ];

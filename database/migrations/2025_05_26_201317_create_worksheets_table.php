@@ -24,6 +24,8 @@ return new class extends Migration
         $table->integer('total_users')->default(0);
         $table->string('workspace')->nullable();
         $table->string('tag')->nullable();
+        $table->string('status')->nullable();
+        $table->string('details')->nullable();
         $table->string('sheet_link')->nullable();
         $table->timestamp('timestamp_cdt')->nullable();
 
