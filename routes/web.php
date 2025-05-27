@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/clients', [ClientController::class, 'index'])->name('clientpanel.client');
     Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentialspanel.credential');
 
+     Route::post('/worksheets', [WorksheetController::class, 'storeWorksheet'])->name('worksheet.store');
+
+
 });
 
 Route::middleware('auth')->group(function () {
