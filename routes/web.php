@@ -5,11 +5,8 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
-<<<<<<< HEAD
 use App\Http\Controllers\SheetTrackerController;
-=======
 use App\Http\Controllers\WorksheetController;
->>>>>>> 407e1b351b7b5c642c699328d4cb8acbf92eec28
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,13 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/employee', [EmployeeController::class, 'fetchEmployee'])->name('api.employee');
 
 
-<<<<<<< HEAD
-=======
     Route::get('/worksheets', [WorksheetController::class, 'index'])->name('worksheetpanel.worksheet');
     Route::get('/clients', [ClientController::class, 'index'])->name('clientpanel.client');
     Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentialspanel.credential');
 
->>>>>>> 407e1b351b7b5c642c699328d4cb8acbf92eec28
 });
 
 Route::middleware('auth')->group(function () {
