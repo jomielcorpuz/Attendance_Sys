@@ -85,6 +85,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 icon: CalendarClock,
             },
             {
+                title: "Tracker",
+                url: route('trackerpanel.sheettracker'),
+                icon: FolderIcon,
+            },
+            {
                 title: "Tasks",
                 url: "#",
                 icon: FolderIcon,

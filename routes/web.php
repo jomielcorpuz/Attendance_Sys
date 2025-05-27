@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SheetTrackerController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,8 +25,10 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendancepanel.attendance');
+    Route::get('/tracker', [SheetTrackerController::class, 'index'])->name('trackerpanel.sheettracker');
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employeepanel.employee');
     Route::get('/api/employee', [EmployeeController::class, 'fetchEmployee'])->name('api.employee');
+
 
 });
 
