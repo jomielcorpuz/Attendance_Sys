@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Loader2, Plus, SquarePen } from 'lucide-react';
 import {
@@ -18,6 +18,9 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/Components/ui/dialog';
+import { toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
+
 
 const formSchema = z.object({
     worksheet_name: z.string().min(1, "Worksheet name is required"),
@@ -30,7 +33,7 @@ const formSchema = z.object({
     tag: z.string().min(1, "Tag is required"),
     sheet_link: z.string().min(1, "Sheet link is required"),
     timestamp_cdt: z.coerce.date(),
-    details: z.string().optional(),
+    //details: z.string().optional(),
 });
 
 
@@ -56,6 +59,30 @@ interface Worksheet {
 function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Worksheet; onSuccess?: () => void }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [processing, setProcessing] = React.useState(false);
+
+    const [cdtTime, setCdtTime] = useState(() =>
+        format(toZonedTime(new Date(), "America/Chicago"), "EEE, MMM dd yyyy hh:mm:ss aaaa zzz")
+    );
+    const cdtNow = toZonedTime(new Date(), "America/Chicago");
+    const formattedCDT = format(cdtNow, "yyyy-MM-dd hh:mm:ss aaaa zzz");
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const chicagoTime = toZonedTime(now, "America/Chicago");
+            const formatted = format(chicagoTime, "EEE, MMM dd yyyy hh:mm:ss aaaa ");
+            setCdtTime(formatted);
+        }, 1000);
+
+        return () => clearInterval(interval); // Cleanup when component unmounts or dialog closes
+    }, []);
+
+    useEffect(() => {
+        const now = new Date();
+        const chicagoTime = toZonedTime(now, "America/Chicago");
+        form.setValue("timestamp_cdt", chicagoTime);
+    }, []);
 
 
     const form = useForm({
@@ -96,7 +123,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                 tag: worksheets.tag ?? '',
                 sheet_link: worksheets.sheet_link ?? '',
                 timestamp_cdt: worksheets.timestamp_cdt ? new Date(worksheets.timestamp_cdt) : new Date(),
-                details: worksheets.details ?? ''
+                // details: worksheets.details ?? ''
             });
         } else {
             form.reset({
@@ -110,7 +137,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                 tag: '',
                 sheet_link: '',
                 timestamp_cdt: new Date(),
-                details: ''
+                //details: ''
             });
         }
     }, [worksheets, isOpen]);
@@ -124,8 +151,18 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
             // You can compute or format data here, like:
             // const formattedDate = format(new Date(data.date), "yyyy-MM-dd");
 
+            // Step 1: Get Chicago time as a Date
+            const chicagoDate = toZonedTime(new Date(), "America/Chicago");
+
+            // Step 2: Set raw Date in form (because Zod expects Date)
+            form.setValue("timestamp_cdt", chicagoDate);
+
+            // Step 3: Format it for submission (MySQL-compatible)
+            const formattedCDT = format(chicagoDate, "yyyy-MM-dd HH:mm:ss");
+
             const finalData = {
                 ...data,
+                timestamp_cdt: formattedCDT,
                 // Additional formatting or computed fields can be set here
             };
 
@@ -244,7 +281,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                                 name="no_of_users_per_domain"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>No. of Users</FormLabel>
+                                        <FormLabel>Users per Domain</FormLabel>
                                         <FormControl>
                                             <Input type='number' placeholder="" {...field} />
                                         </FormControl>
@@ -257,7 +294,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                                 name="total_users"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>No. of Users</FormLabel>
+                                        <FormLabel>Total Users</FormLabel>
                                         <FormControl>
                                             <Input type='number' placeholder="" {...field} />
                                         </FormControl>
@@ -292,7 +329,18 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                                     </FormItem>
                                 )}
                             />
+
+                            {/* DATE */}
+                            <FormItem>
+                                <FormLabel>Current Time (CDT)</FormLabel>
+                                <FormControl>
+                                    <Input value={cdtTime} readOnly className="bg-muted cursor-not-allowed" />
+                                </FormControl>
+                            </FormItem>
                         </div>
+
+
+
                         <FormField
                             control={form.control}
                             name="sheet_link"
@@ -307,7 +355,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                             )}
                         />
 
-                        <FormField
+                        {/* <FormField
                             control={form.control}
                             name="details"
                             render={({ field }) => (
@@ -319,7 +367,7 @@ function CreateWorkSheetDialog({ worksheets, onSuccess }: { worksheets?: Workshe
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        />
+                        /> */}
                         <DialogFooter className="gap-4">
                             <Button
                                 type="button"

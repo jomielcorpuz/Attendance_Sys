@@ -19,7 +19,7 @@ class Worksheets extends Model
     'tag',
     'sheet_link',
     'timestamp_cdt',
-    'details',
+    //'details',
     'created_by',
     'ip_address',
 ];
