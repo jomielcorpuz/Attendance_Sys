@@ -236,12 +236,12 @@ function Worksheet({ worksheet_data, pagination, queryParams: initialQueryParams
                                         <Checkbox
                                         />
                                     </TableHead>
-                                    <TableHead >Full Name</TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'> Nickname</TableHead>
-                                    <TableHead> <div className='flex justify-start items-center gap-2'>  Team </div></TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'> Salary rate</TableHead>
+                                    <TableHead >Worksheet Name</TableHead>
+                                    <TableHead className='flex justify-start items-center gap-2'>Cloudflare</TableHead>
+                                    <TableHead> <div className='flex justify-start items-center gap-2'>Admin Panel</div></TableHead>
+                                    <TableHead className='flex justify-start items-center gap-2'>Tag</TableHead>
+                                    <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Status</div></TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Date Created</div></TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'> Status</TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2'>   Provider </div></TableHead>
                                     <TableHead ><div className='flex justify-center items-center gap-2'>  Actions</div ></TableHead>
                                 </TableRow>
@@ -259,14 +259,15 @@ function Worksheet({ worksheet_data, pagination, queryParams: initialQueryParams
                                             <TableCell className='text-nowrap'>{worksheet.cloudflare_username}</TableCell>
                                             <TableCell className='text-nowrap'>{worksheet.googlepanel_username}</TableCell>
                                             <TableCell>{worksheet.tag}</TableCell>
-                                            <TableCell className="">
-                                                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(worksheet.created_at))}
-                                            </TableCell>
 
 
                                             <TableCell>  <span className={"px-2 py-1 rounded-xl " + ACTIVE_STATUS_CLASS_MAP[worksheet.status]}>
                                                 {ACTIVE_STATUS_TEXT_MAP[worksheet.status]}
                                             </span></TableCell>
+
+                                            <TableCell className="">
+                                                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(worksheet.created_at))}
+                                            </TableCell>
                                             <TableCell>{worksheet.created_by}</TableCell>
 
                                             <TableCell className="flex justify-center items-center text-right space-x-4">
