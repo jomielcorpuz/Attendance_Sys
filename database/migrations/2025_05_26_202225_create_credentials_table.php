@@ -13,13 +13,21 @@ return new class extends Migration
     {
        Schema::create('credentials', function (Blueprint $table) {
         $table->id();
+        $table->string('name');
         $table->string('username');
         $table->string('password');
+        $table->string('assigned');
+        $table->string('available');
         $table->string('status');
+        $table->string('category');
+        $table->string('remarks');
         $table->string('description');
         $table->string('organization_name');
         $table->string('label'); // e.g., "Cloudflare", "Google Panel"
 
+        // ✅ Foreign key to clients
+        $table->unsignedBigInteger('client_id')->nullable();
+        $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
         // Record-keeping
             $table->unsignedBigInteger('created_by')->nullable();
