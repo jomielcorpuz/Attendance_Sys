@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import Authenticated from '@/Layouts/AuthenticatedLayout'
 import React, { useEffect, useState } from 'react'
 import { router } from '@inertiajs/react';
-import { BookCheck, Briefcase, BriefcaseBusiness, Eye, Layers, NotepadText, PencilLine, Trash2, X } from 'lucide-react';
+import { BookCheck, Briefcase, BriefcaseBusiness, Eye, Layers, NotepadText, PencilLine, ShieldAlert, ShieldCheck, ShieldPlus, Trash2, X } from 'lucide-react';
 import SummaryCard from '@/Components/summary-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,39 +10,39 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Checkbox from '@/Components/Checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PaginateRes from '@/Components/PaginateRes';
-import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP } from '@/constants';
+import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP, CREDENTIAL_STATUS_CLASS_MAP, CREDENTIAL_STATUS_TEXT_MAP } from '@/constants';
 import { FilterMenuCheckboxes } from '@/Components/filter-column';
 import AddCredentialsDialog from './CreateDialog';
 
 
-const summaryWorksheets = [
+const summaryCredentials = [
 
-    { title: "Total Task", value: "100", icon: Briefcase },
-    { title: "Active Task", value: "12", icon: NotepadText },
-    { title: "Pending Task", value: "50", icon: Layers },
-    { title: "Completed Task", value: "5", icon: BookCheck },
+    { title: "Total ", value: "100", icon: ShieldPlus },
+    { title: "Active ", value: "80", icon: ShieldCheck },
+    { title: "Suspended ", value: "20", icon: ShieldAlert },
 
 ]
 
 interface Credentials {
     id?: number;
     name: string;
+    client_id: number;
     username: string;
     password: string;
-    assigned: string;
-    available: string;
+    assigned: number;
+    available: number;
     category: string;
     remarks: string;
     description: string;
     organization_name: string;
     label: string;
     created_at: string
-    status: "Active" | "Inactive" | "Scheduled" | "Settled";
+    status: "Active" | "Inactive" | "Updated" | "Suspended";
     created_by: string;
 }
 
 interface CredentialsProps {
-    worksheet_data: {
+    credentials_data: {
         data: Credentials[];
         links: any;
         meta: any;
@@ -52,9 +52,9 @@ interface CredentialsProps {
 }
 
 
-function Credentials({ worksheet_data, pagination, queryParams: initialQueryParams }: CredentialsProps) {
+function Credentials({ credentials_data, pagination, queryParams: initialQueryParams }: CredentialsProps) {
 
-    const worksheets = worksheet_data.data || [];
+    const credentials = credentials_data.data || [];
     const [isPanelOpen, setIsPanelOpen] = React.useState(false);
     const [selectedEmployee, setSelectedEmployee] = React.useState<Credentials | null>(null);
     const [selectedEmployeeID, setSelectedEmployeeID] = React.useState<number[]>([])
@@ -187,12 +187,12 @@ function Credentials({ worksheet_data, pagination, queryParams: initialQueryPara
         <Authenticated>
 
             <div className='px-8 py-4 flex items-end justify-end'>
-                <AddCredentialsDialog worksheets={undefined} onSuccess={() => router.reload()} />
+                <AddCredentialsDialog credentials={undefined} onSuccess={() => router.reload()} />
 
 
             </div>
             <div className='px-8 py-4 grid gap-6 lg:grid-cols-4 sm:grid-cols-1' >
-                {summaryWorksheets.map((item) => (
+                {summaryCredentials.map((item) => (
                     <SummaryCard key={item.title} title={item.title} value={item.value} icon={item.icon} />
                 ))}
             </div>
@@ -244,37 +244,46 @@ function Credentials({ worksheet_data, pagination, queryParams: initialQueryPara
                                 </TableRow>
                             </TableHeader>
                             <TableBody >
-                                {worksheets.length > 0 ? (
-                                    worksheets.map((worksheet: Credentials) => (
+                                {credentials.length > 0 ? (
+                                    credentials.map((credential: Credentials) => (
                                         <TableRow
-                                            key={worksheet.id}
+                                            key={credential.id}
                                             className='transition-all duration-100 text-md'>
                                             <TableCell >
 
                                             </TableCell>
-                                            <TableCell className="font-medium text-nowrap">{worksheet.worksheet_name}</TableCell>
-                                            <TableCell className='text-nowrap'>{worksheet.cloudflare_username}</TableCell>
-                                            <TableCell className='text-nowrap'>{worksheet.googlepanel_username}</TableCell>
-                                            <TableCell>{worksheet.tag}</TableCell>
+                                            <TableCell className="font-medium text-nowrap">{credential.name}</TableCell>
+                                            <TableCell>{credential.label}</TableCell>
+                                            <TableCell className='text-nowrap'>
+                                                {credential.username}
+                                                <div>
+
+                                                    <Button
+                                                        type='button'
+                                                        onClick={() => handleRowClick(credential)}
+                                                        variant="ghost"
+                                                        className='px-3 gap-1 transition-all duration-100 hover:scale-105' >
+                                                        <Eye /> View
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className='text-nowrap'>{credential.password}</TableCell>
+                                            <TableCell>{credential.assigned}</TableCell>
+                                            <TableCell>{credential.available}</TableCell>
+                                            <TableCell>{credential.status}</TableCell>
 
 
-                                            <TableCell>  <span className={"px-2 py-1 rounded-xl " + ACTIVE_STATUS_CLASS_MAP[worksheet.status]}>
-                                                {ACTIVE_STATUS_TEXT_MAP[worksheet.status]}
+                                            <TableCell>  <span className={"px-2 py-1 rounded-xl " + CREDENTIAL_STATUS_CLASS_MAP[credential.status]}>
+                                                {CREDENTIAL_STATUS_TEXT_MAP[credential.status]}
                                             </span></TableCell>
 
                                             <TableCell className="">
-                                                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(worksheet.created_at))}
+                                                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(credential.created_at))}
                                             </TableCell>
-                                            <TableCell>{worksheet.created_by}</TableCell>
+                                            <TableCell>{credential.created_by}</TableCell>
 
                                             <TableCell className="flex justify-center items-center text-right space-x-4">
-                                                <Button
-                                                    type='button'
-                                                    onClick={() => handleRowClick(worksheet)}
-                                                    variant="ghost"
-                                                    className='px-3 gap-1 transition-all duration-100 hover:scale-105' >
-                                                    <Eye /> View
-                                                </Button>
+
                                                 <Button
                                                     variant="ghost"
                                                     className='px-3 gap-1 transition-all duration-100 hover:scale-105'>
@@ -286,7 +295,7 @@ function Credentials({ worksheet_data, pagination, queryParams: initialQueryPara
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                onClick={() => handleDeleteClick(worksheet)}
+                                                                onClick={() => handleDeleteClick(credential)}
                                                                 className='px-2 gap-1 transition-all duration-100 hover:scale-105'>
                                                                 <Trash2 color="red" />
                                                             </Button>

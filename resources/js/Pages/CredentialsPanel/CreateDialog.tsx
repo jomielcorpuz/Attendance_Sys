@@ -23,21 +23,21 @@ import { format } from 'date-fns';
 
 
 const formSchema = z.object({
-    worksheet_name: z.string().min(1, "Worksheet name is required"),
-    cloudflare_username: z.string().min(1, "Cloudflare is required"),
-    googlepanel_username: z.string().min(1, "Google Admin Panel name is required"),
-    no_of_domains: z.coerce.number().min(1, "Number of domains is required"),
-    no_of_users_per_domain: z.coerce.number().min(1, "Users per domain is required"),
-    total_users: z.coerce.number().min(1, "Total users is required"),
-    workspace: z.string().optional(),
-    tag: z.string().min(1, "Tag is required"),
-    sheet_link: z.string().min(1, "Sheet link is required"),
-    timestamp_cdt: z.coerce.date(),
-    details: z.string().optional(),
+    worksheet_name: z.string().min(1, "Credential name is required"),
+    username: z.string().min(1, "Username is required"),
+    password: z.string().min(1, "Password is required"),
+    available: z.coerce.number().min(1, "Available slots is required"),
+    assigned: z.coerce.number().optional();
+    status: z.string().optional(),
+    category: z.string().optional(),
+    remarks: z.string().optional(),
+    description: z.string().optional(),
+    organization_name: z.string().optional(),
+    label: z.string().min(1, "Tag is required"),
 });
 
 
-interface Worksheet {
+interface Credential {
     id?: number;
     worksheet_name: string;
     cloudflare_username: string;
@@ -56,7 +56,7 @@ interface Worksheet {
     created_by: string;
 }
 
-function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Worksheet; onSuccess?: () => void }) {
+function AddCredentialsDialog({ credentials, onSuccess }: { credentials?: Credential; onSuccess?: () => void }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [processing, setProcessing] = React.useState(false);
 
@@ -111,19 +111,19 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
 
     // Populate form if editing
     useEffect(() => {
-        if (worksheets) {
+        if (credentials) {
             form.reset({
-                worksheet_name: worksheets.worksheet_name ?? '',
-                cloudflare_username: worksheets.cloudflare_username ?? '',
-                googlepanel_username: worksheets.googlepanel_username ?? '',
-                no_of_domains: worksheets.no_of_domains ?? 0,
-                no_of_users_per_domain: worksheets.no_of_users_per_domain ?? 0,
-                total_users: worksheets.total_users ?? 0,
-                workspace: worksheets.workspace ?? '',
-                tag: worksheets.tag ?? '',
-                sheet_link: worksheets.sheet_link ?? '',
-                timestamp_cdt: worksheets.timestamp_cdt ? new Date(worksheets.timestamp_cdt) : new Date(),
-                // details: worksheets.details ?? ''
+                worksheet_name: credentials.worksheet_name ?? '',
+                cloudflare_username: credentials.cloudflare_username ?? '',
+                googlepanel_username: credentials.googlepanel_username ?? '',
+                no_of_domains: credentials.no_of_domains ?? 0,
+                no_of_users_per_domain: credentials.no_of_users_per_domain ?? 0,
+                total_users: credentials.total_users ?? 0,
+                workspace: credentials.workspace ?? '',
+                tag: credentials.tag ?? '',
+                sheet_link: credentials.sheet_link ?? '',
+                timestamp_cdt: credentials.timestamp_cdt ? new Date(credentials.timestamp_cdt) : new Date(),
+                // details: credentials.details ?? ''
             });
         } else {
             form.reset({
@@ -140,12 +140,12 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
                 //details: ''
             });
         }
-    }, [worksheets, isOpen]);
+    }, [credentials, isOpen]);
 
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         setProcessing(true);
-        console.log("📝 Submitting Worksheet Data:", data);
+        console.log("📝 Submitting Credential Data:", data);
 
         try {
             // You can compute or format data here, like:
@@ -168,8 +168,8 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
 
             console.log("📦 Final Data to Send:", finalData);
 
-            const url = worksheets ? `/worksheets/${worksheets.id}` : "/worksheets";
-            const method = worksheets ? 'put' : 'post';
+            const url = credentials ? `/credentials/${credentials.id}` : "/credentials";
+            const method = credentials ? 'put' : 'post';
 
             router[method](url, finalData, {
                 onError: (errors) => {
@@ -183,7 +183,7 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
                     setProcessing(false);
                 },
                 onSuccess: () => {
-                    console.log("✅ Worksheet submission successful!");
+                    console.log("✅ Credential submission successful!");
                     form.reset();
                     handleCloseDialog?.(); // Closes dialog and resets
                     setProcessing(false);
@@ -206,15 +206,15 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                {worksheets ? (
+                {credentials ? (
                     <Button variant="outline"><SquarePen color='blue' /> Edit</Button>
                 ) : (
-                    <Button><Plus /> Add Worksheet</Button>
+                    <Button><Plus /> Add Credential</Button>
                 )}
             </DialogTrigger>
 
             <DialogContent>
-                <DialogTitle>{worksheets ? "Edit Worksheet" : "Add Worksheet"}</DialogTitle>
+                <DialogTitle>{credentials ? "Edit Credential" : "Add Credential"}</DialogTitle>
                 <Separator />
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -223,7 +223,7 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
                             name="worksheet_name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Worksheet Name</FormLabel>
+                                    <FormLabel>Credential Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="" {...field} />
                                     </FormControl>
@@ -387,7 +387,7 @@ function AddCredentialsDialog({ worksheets, onSuccess }: { worksheets?: Workshee
                                         <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                                         Saving...
                                     </>
-                                ) : worksheets ? "Update" : "Create"}
+                                ) : credentials ? "Update" : "Create"}
                             </Button>
                         </DialogFooter>
 

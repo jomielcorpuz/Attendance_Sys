@@ -16,13 +16,13 @@ return new class extends Migration
         $table->string('name');
         $table->string('username');
         $table->string('password');
-        $table->string('assigned');
-        $table->string('available');
+        $table->integer('assigned')->nullable();
+        $table->integer('available');
         $table->string('status');
         $table->string('category');
-        $table->string('remarks');
-        $table->string('description');
-        $table->string('organization_name');
+        $table->string('remarks')->nullable();
+        $table->string('description')->nullable();
+        $table->string('organization_name')->nullable();
         $table->string('label'); // e.g., "Cloudflare", "Google Panel"
 
         // ✅ Foreign key to clients
