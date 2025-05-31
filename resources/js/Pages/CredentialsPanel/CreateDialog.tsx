@@ -23,17 +23,17 @@ import { format } from 'date-fns';
 
 
 const formSchema = z.object({
-    worksheet_name: z.string().min(1, "Credential name is required"),
+    name: z.string().min(1, "Credential name is required"),
     username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password is required"),
     available: z.coerce.number().min(1, "Available slots is required"),
-    assigned: z.coerce.number().optional();
+    assigned: z.coerce.number().optional(),
     status: z.string().optional(),
-    category: z.string().optional(),
+    category: z.string().min(1, "Category is required"),
     remarks: z.string().optional(),
     description: z.string().optional(),
     organization_name: z.string().optional(),
-    label: z.string().min(1, "Tag is required"),
+    label: z.string().min(1, "label is required"),
 });
 
 
@@ -50,7 +50,6 @@ interface Credential {
     workspace: string;
     tag: string;
     sheet_link: string;
-    timestamp_cdt: Date;
     created_at: string
     details: string;
     created_by: string;
@@ -81,7 +80,6 @@ function AddCredentialsDialog({ credentials, onSuccess }: { credentials?: Creden
     useEffect(() => {
         const now = new Date();
         const chicagoTime = toZonedTime(now, "America/Chicago");
-        form.setValue("timestamp_cdt", chicagoTime);
     }, []);
 
 

@@ -83,14 +83,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: "Worksheets",
                 url: route('worksheetpanel.worksheet'),
                 icon: ListIcon,
-                isActive: isRouteActive('employee'),
+                isActive: isRouteActive('worksheets'),
 
             },
             {
-                title: "Panels",
-                url: route('employeepanel.employee'),
+                title: "Credentials",
+                url: route('credentialspanel.credentials'),
                 icon: ListIcon,
-                isActive: isRouteActive('employee'),
+                isActive: isRouteActive('credentials'),
 
             },
             {
