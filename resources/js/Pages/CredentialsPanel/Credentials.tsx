@@ -105,8 +105,8 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
 
 
-    const handleRowClick = (worksheet: Credentials) => {
-        setSelectedEmployee(worksheet);
+    const handleRowClick = (credentials: Credentials) => {
+        setSelectedEmployee(credentials);
         setIsPanelOpen(true);
     };
 
@@ -115,8 +115,8 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
         setSelectedEmployee(null);
     };
 
-    const handleDeleteClick = (worksheet: Credentials) => {
-        setSelectedDelete(worksheet);
+    const handleDeleteClick = (credentials: Credentials) => {
+        setSelectedDelete(credentials);
         setDeleteDialogOpen(true);
     };
 
@@ -130,7 +130,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
     // Fetch data when filters change
     useEffect(() => {
-        router.get(route("worksheetpanel.worksheet"), {
+        router.get(route("credentialspanel.credentials"), {
             ...queryParams,
             ...filters,
         }, { replace: true, preserveState: true });
@@ -147,7 +147,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                 newQueryParams.sort_direction = "asc";
             }
 
-            router.get(route("worksheetpanel.worksheet"), { ...newQueryParams, ...filters }, {
+            router.get(route("credentialspanel.credentials"), { ...newQueryParams, ...filters }, {
                 replace: true,
                 preserveState: true,
                 preserveScroll: true,
@@ -172,7 +172,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
 
     useEffect(() => {
-        router.get(route("worksheetpanel.worksheet"), { ...queryParams, ...filters }, {
+        router.get(route("credentialspanel.credentials"), { ...queryParams, ...filters }, {
             replace: true,
             preserveState: true
         });
@@ -199,13 +199,13 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
             <Card className="mx-8 my-4 lg:col-span-2 sm: col-span-1 ">
                 <div className="p-4 ">
-                    <h2 className="mb-4 font-semibold text-xl text-gray-800">Worksheet List</h2>
+                    <h2 className="mb-4 font-semibold text-xl text-gray-800">credentials List</h2>
                     {/* Search Input */}
                     <div className='flex space-x-6'>
                         <div className="relative w-full">
                             <Input
                                 type="text"
-                                placeholder="Search households..."
+                                placeholder="Search"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="border p-2 rounded pr-10" // Add padding to the right to make space for the button
@@ -233,7 +233,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                                         <Checkbox
                                         />
                                     </TableHead>
-                                    <TableHead >Worksheet Name</TableHead>
+                                    <TableHead >credentials Name</TableHead>
                                     <TableHead className='flex justify-start items-center gap-2'>Cloudflare</TableHead>
                                     <TableHead> <div className='flex justify-start items-center gap-2'>Admin Panel</div></TableHead>
                                     <TableHead className='flex justify-start items-center gap-2'>Tag</TableHead>
@@ -311,7 +311,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                                 ) : (
                                     <TableRow>
                                         <TableCell colSpan={10} className="text-center py-4">
-                                            No employees found
+                                            No Credentials Found
                                         </TableCell>
                                     </TableRow>
                                 )}

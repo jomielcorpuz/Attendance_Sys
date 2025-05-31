@@ -39,10 +39,10 @@ const formSchema = z.object({
 
 interface Credential {
     id?: number;
-    worksheet_name: string;
-    cloudflare_username: string;
-    googlepanel_username: string;
-    cloudflare_credential_id: string;
+    name: string;
+    username: string;
+    password: string;
+    assigned: number;
     googlepanel_credential_id: string;
     no_of_domains: number;
     no_of_users_per_domain: number;

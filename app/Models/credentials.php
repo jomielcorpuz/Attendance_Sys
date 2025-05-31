@@ -32,4 +32,9 @@ class Credentials extends Model
         return $this->belongsTo(Clients::class);
     }
 
+    public function worksheets()
+    {
+        return $this->belongsToMany(Worksheets::class, 'credential_worksheet');
+    }
+
 }
