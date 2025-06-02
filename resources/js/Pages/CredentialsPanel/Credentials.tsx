@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import Authenticated from '@/Layouts/AuthenticatedLayout'
 import React, { useEffect, useState } from 'react'
 import { router } from '@inertiajs/react';
-import { BookCheck, Briefcase, BriefcaseBusiness, Eye, Layers, NotepadText, PencilLine, ShieldAlert, ShieldCheck, ShieldPlus, Trash2, X } from 'lucide-react';
+import { BookCheck, Briefcase, BriefcaseBusiness, Check, Copy, Eye, Layers, NotepadText, PencilLine, ShieldAlert, ShieldCheck, ShieldPlus, Trash2, X } from 'lucide-react';
 import SummaryCard from '@/Components/summary-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import PaginateRes from '@/Components/PaginateRes';
 import { ACTIVE_STATUS_CLASS_MAP, ACTIVE_STATUS_TEXT_MAP, CREDENTIAL_STATUS_CLASS_MAP, CREDENTIAL_STATUS_TEXT_MAP } from '@/constants';
 import { FilterMenuCheckboxes } from '@/Components/filter-column';
-import AddCredentialsDialog from './CreateDialog';
+import AddCredentialsDialog from './CreateCredDialog';
 
+import { motion, AnimatePresence } from "framer-motion"
+import { Toaster } from '@/Components/ui/sonner';
+import { toast } from 'sonner';
+import ConfirmDeleteDialog from '@/Components/ConfirmDeleteDialog';
 
 const summaryCredentials = [
 
@@ -36,6 +40,7 @@ interface Credentials {
     description: string;
     organization_name: string;
     label: string;
+    platform: string;
     created_at: string
     status: "Active" | "Inactive" | "Updated" | "Suspended";
     created_by: string;
@@ -60,6 +65,8 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
     const [selectedEmployeeID, setSelectedEmployeeID] = React.useState<number[]>([])
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [selectedDelete, setSelectedDelete] = React.useState<Credentials | null>(null);
+    const [copiedField, setCopiedField] = useState<{ id: string; field: "username" | "password" } | null>(null);
+
 
 
     const [queryParams, setQueryParams] = React.useState(initialQueryParams || {});
@@ -105,10 +112,42 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
 
 
-    const handleRowClick = (credentials: Credentials) => {
-        setSelectedEmployee(credentials);
-        setIsPanelOpen(true);
+    const handleCopy = async (
+        text: string,
+        id: string | number,
+        field: "username" | "password"
+    ) => {
+        try {
+            await navigator.clipboard.writeText(text);
+
+            // Convert id to string consistently
+            setCopiedField({ id: String(id), field });
+
+            // Show a toast notification for successful copy
+            toast.success(`${field.charAt(0).toUpperCase() + field.slice(1)} copied to clipboard!`);
+
+            setTimeout(() => setCopiedField(null), 2000);
+        } catch (err) {
+            toast.error("Failed to copy to clipboard.");
+        }
     };
+
+
+    const handleConfirmDelete = () => {
+        if (selectedDelete) {
+            router.delete(route('credential.delete', selectedDelete.id), {
+                preserveScroll: true,
+                onError: () => {
+                    setDeleteDialogOpen(false);
+                },
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    setSelectedDelete(null);
+                },
+            });
+        }
+    };
+
 
     const handleClosePanel = () => {
         setIsPanelOpen(false);
@@ -199,10 +238,10 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
             <Card className="mx-8 my-4 lg:col-span-2 sm: col-span-1 ">
                 <div className="p-4 ">
-                    <h2 className="mb-4 font-semibold text-xl text-gray-800">credentials List</h2>
+                    <h2 className="mb-4 font-semibold text-xl text-gray-800">Credentials List</h2>
                     {/* Search Input */}
-                    <div className='flex space-x-6'>
-                        <div className="relative w-full">
+                    <div className='flex justify-end space-x-6'>
+                        <div className="relative ">
                             <Input
                                 type="text"
                                 placeholder="Search"
@@ -224,7 +263,7 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                         <FilterMenuCheckboxes items={items} />
 
                     </div>
-                    <div className="overflow-auto">
+                    <div className="my-4 overflow-auto">
                         <Table className="w-full  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 
                             <TableHeader>
@@ -233,14 +272,15 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                                         <Checkbox
                                         />
                                     </TableHead>
-                                    <TableHead >credentials Name</TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'>Cloudflare</TableHead>
-                                    <TableHead> <div className='flex justify-start items-center gap-2'>Admin Panel</div></TableHead>
-                                    <TableHead className='flex justify-start items-center gap-2'>Tag</TableHead>
-                                    <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Status</div></TableHead>
-                                    <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Date Created</div></TableHead>
-                                    <TableHead ><div className='flex justify-start items-center gap-2'>   Provider </div></TableHead>
-                                    <TableHead ><div className='flex justify-center items-center gap-2'>  Actions</div ></TableHead>
+                                    <TableHead >Name</TableHead>
+                                    <TableHead> <div className='flex justify-start items-center gap-2'>Platform</div></TableHead>
+                                    <TableHead className='flex justify-start items-center gap-2'>Username</TableHead>
+                                    <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Password</div></TableHead>
+                                    <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Assigned</div></TableHead>
+                                    <TableHead ><div className='flex justify-start items-center gap-2'>Available</div></TableHead>
+                                    <TableHead ><div className='flex justify-center items-center gap-2'>Status</div ></TableHead>
+                                    <TableHead ><div className='flex justify-center items-center gap-2'>Remarks</div ></TableHead>
+                                    <TableHead ><div className='flex justify-center items-center gap-2'>Actions</div ></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody >
@@ -253,34 +293,96 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
 
                                             </TableCell>
                                             <TableCell className="font-medium text-nowrap">{credential.name}</TableCell>
-                                            <TableCell>{credential.label}</TableCell>
-                                            <TableCell className='text-nowrap'>
-                                                {credential.username}
-                                                <div>
+                                            <TableCell>{credential.platform}</TableCell>
 
+
+                                            <TableCell>
+                                                <div className='flex items-center gap-1'>
+                                                    {credential.username}
                                                     <Button
                                                         type='button'
-                                                        onClick={() => handleRowClick(credential)}
-                                                        variant="ghost"
-                                                        className='px-3 gap-1 transition-all duration-100 hover:scale-105' >
-                                                        <Eye /> View
+                                                        onClick={() =>
+                                                            credential.id && handleCopy(credential.username, credential.id, "username")
+                                                        }
+                                                        variant='ghost'
+                                                        className='px-3 transition-all duration-100 hover:scale-105'
+                                                    >
+                                                        <AnimatePresence mode="wait" initial={false}>
+                                                            {copiedField?.id === String(credential.id) &&
+                                                                copiedField.field === "username" ? (
+                                                                <motion.div
+                                                                    key="check-username"
+                                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                                    transition={{ duration: 0.2 }}
+                                                                >
+                                                                    <Check className="w-4 h-4 text-green-500" />
+                                                                </motion.div>
+                                                            ) : (
+                                                                <motion.div
+                                                                    key="copy-username"
+                                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                                    transition={{ duration: 0.2 }}
+                                                                >
+                                                                    <Copy className="w-4 h-4" />
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
                                                     </Button>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className='text-nowrap'>{credential.password}</TableCell>
+
+
+                                            <TableCell>
+                                                <div className='flex items-center gap-1'>
+                                                    {credential.password}
+                                                    <Button
+                                                        type='button'
+                                                        onClick={() =>
+                                                            credential.id && handleCopy(credential.password, credential.id, "password")
+                                                        }
+                                                        variant='ghost'
+                                                        className='px-3 transition-all duration-100 hover:scale-105'
+                                                    >
+                                                        <AnimatePresence mode="wait" initial={false}>
+                                                            {copiedField?.id === String(credential.id) &&
+                                                                copiedField.field === "password" ? (
+                                                                <motion.div
+                                                                    key="check-password"
+                                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                                    transition={{ duration: 0.2 }}
+                                                                >
+                                                                    <Check className="w-4 h-4 text-green-500" />
+                                                                </motion.div>
+                                                            ) : (
+                                                                <motion.div
+                                                                    key="copy-password"
+                                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                                    transition={{ duration: 0.2 }}
+                                                                >
+                                                                    <Copy className="w-4 h-4" />
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+
                                             <TableCell>{credential.assigned}</TableCell>
                                             <TableCell>{credential.available}</TableCell>
-                                            <TableCell>{credential.status}</TableCell>
 
 
                                             <TableCell>  <span className={"px-2 py-1 rounded-xl " + CREDENTIAL_STATUS_CLASS_MAP[credential.status]}>
                                                 {CREDENTIAL_STATUS_TEXT_MAP[credential.status]}
                                             </span></TableCell>
-
-                                            <TableCell className="">
-                                                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(credential.created_at))}
-                                            </TableCell>
-                                            <TableCell>{credential.created_by}</TableCell>
+                                            <TableCell>{credential.remarks}</TableCell>
 
                                             <TableCell className="flex justify-center items-center text-right space-x-4">
 
@@ -323,6 +425,18 @@ function Credentials({ credentials_data, pagination, queryParams: initialQueryPa
                     <PaginateRes pagination={pagination} />
                 </div>
             </Card >
+
+
+            < ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                title="Confirm Deletion"
+                message={`Are you sure you want to delete "${selectedDelete?.name}" credential?`
+                }
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setDeleteDialogOpen(false)}
+            />
+
+
         </Authenticated>
     )
 }

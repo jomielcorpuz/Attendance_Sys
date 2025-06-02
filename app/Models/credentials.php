@@ -30,12 +30,6 @@ class Credentials extends Model
         'color_marker',
         'client_id',
         'created_by',
-        'updated_by',
-        'deleted_by',
-        'ip_address',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
 

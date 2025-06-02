@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCredentialRequest;
 use App\Models\Credentials;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CredentialsController extends Controller
 {
@@ -82,5 +84,34 @@ class CredentialsController extends Controller
         'auth' => Auth::check(),
     ]);
 }
+
+
+
+    public function storeCredential(StoreCredentialRequest $request)
+    {
+
+        Log::info('Incoming request data:', $request->all());
+
+       $validatedData = $request->validated();
+
+        Credentials::create($validatedData);
+
+
+
+        return redirect()->back()->with('success', 'Credential created successfully.');
+    }
+
+
+    //Soft Delete Credential
+     public function deleteCredential(Credentials $credential)
+     {
+         Log::info('Soft deleting credential:', ['name' => $credential->name, 'id' => $credential->id]);
+
+         $name = $credential->name;
+         $credential->delete(); // Soft delete
+
+         return to_route('credentialspanel.credentials')->with('success', "Credential \"$name\" has been deleted.");
+     }
+
 
 }
