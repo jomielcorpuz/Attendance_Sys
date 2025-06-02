@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ApiClientController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CredentialsController;
@@ -34,8 +35,14 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/worksheets', [WorksheetController::class, 'index'])->name('worksheetpanel.worksheet');
+
     Route::get('/clients', [ClientController::class, 'index'])->name('clientpanel.client');
+    Route::get('/api/clients', [ApiClientController::class, 'index'])->name('api.client');
+
+
     Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentialspanel.credentials');
+    Route::post('/credentials', [CredentialsController::class, 'storeCredential'])->name('credential.store');
+     Route::delete('/credentials/{credential}/delete', [CredentialsController::class, 'deleteCredential'])->name('credential.delete');
 
      Route::post('/worksheets', [WorksheetController::class, 'storeWorksheet'])->name('worksheet.store');
 
