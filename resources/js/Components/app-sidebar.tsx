@@ -30,7 +30,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/Components/ui/sidebar"
+} from "@/components/ui/sidebar"
 import { usePage } from "@inertiajs/react"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -74,10 +74,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: "Orders",
-                url: route('employeepanel.employee'),
-                icon: ListIcon,
-                isActive: isRouteActive('employee'),
-
+                url: route('orderpanel.order'),
+                icon: ClipboardListIcon,
+                isActive: isRouteActive('orders'),
             },
             {
                 title: "Worksheets",
@@ -193,7 +192,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={{
+                    id: 1, // Add required id property
+                    roles: [], // Add required roles property
+                    ...data.user // Spread existing user properties
+                }} />
             </SidebarFooter>
         </Sidebar>
     )

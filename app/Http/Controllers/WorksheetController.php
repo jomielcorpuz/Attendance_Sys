@@ -116,4 +116,10 @@ class WorksheetController extends Controller
 
         return redirect()->back()->with('success', 'Worksheet created successfully.');
     }
+
+    public function destroy(Worksheets $worksheet)
+    {
+        $worksheet->delete();
+        return redirect()->back()->with('success', 'Worksheet deleted successfully.');
+    }
 }

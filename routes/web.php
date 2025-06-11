@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SheetTrackerController;
 use App\Http\Controllers\WorksheetController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -45,14 +46,16 @@ Route::middleware('auth')->group(function () {
      Route::delete('/credentials/{credential}/delete', [CredentialsController::class, 'deleteCredential'])->name('credential.delete');
 
      Route::post('/worksheets', [WorksheetController::class, 'storeWorksheet'])->name('worksheet.store');
-
-
+     Route::delete('/worksheets/{worksheet}', [WorksheetController::class, 'destroy'])->name('worksheet.destroy');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orderpanel.order');
+    Route::post('/orders', [OrderController::class, 'store'])->name('order.store');
+    Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
 });
 
 require __DIR__.'/auth.php';
