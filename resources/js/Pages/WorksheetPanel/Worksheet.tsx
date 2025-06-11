@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '@/Components/ui/button'
 import Authenticated from '@/Layouts/AuthenticatedLayout'
 import React, { useEffect, useState } from 'react'
 import CreateWorkSheetDialog from './CreateDialog'
@@ -119,8 +119,14 @@ function Worksheet({ worksheet_data, pagination, queryParams: initialQueryParams
     };
 
     const handleDeleteClick = (worksheet: Worksheet) => {
-        setSelectedDelete(worksheet);
-        setDeleteDialogOpen(true);
+        if (confirm('Are you sure you want to delete this worksheet?')) {
+            router.delete(route('worksheet.destroy', worksheet.id), {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    setSelectedDelete(null);
+                }
+            });
+        }
     };
 
 
@@ -236,9 +242,9 @@ function Worksheet({ worksheet_data, pagination, queryParams: initialQueryParams
                                         <Checkbox
                                         />
                                     </TableHead>
-                                    <TableHead >Worksheet Name</TableHead>
+                                    <TableHead >Name</TableHead>
                                     <TableHead className='flex justify-start items-center gap-2'>Cloudflare</TableHead>
-                                    <TableHead> <div className='flex justify-start items-center gap-2'>Admin Panel</div></TableHead>
+                                    <TableHead> <div className='flex justify-start items-center gap-2'>Panel</div></TableHead>
                                     <TableHead className='flex justify-start items-center gap-2'>Tag</TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Status</div></TableHead>
                                     <TableHead ><div className='flex justify-start items-center gap-2 text-nowrap'>Date Created</div></TableHead>
