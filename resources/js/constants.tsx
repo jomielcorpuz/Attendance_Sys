@@ -28,5 +28,17 @@ export const CREDENTIAL_STATUS_CLASS_MAP = {
     Suspended: "bg-red-100 text-red-500",
 };
 
+export const CLIENT_STATUS_TEXT_MAP = {
+    Active: "Active",
+    Inactive: "Inactive",
+    Banned: "Banned",
+
+};
+export const CLIENT_STATUS_CLASS_MAP = {
+    Active: "bg-green-50 text-green-500",
+    Inactive: "bg-red-100 text-red-500",
+    Banned: "bg-red-100 text-red-500",
+};
+
 
 

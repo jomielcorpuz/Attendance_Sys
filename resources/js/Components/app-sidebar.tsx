@@ -94,9 +94,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: "Clients",
-                url: route('employeepanel.employee'),
+                url: route('clientpanel.client'),
                 icon: ListIcon,
-                isActive: isRouteActive('employee'),
+                isActive: isRouteActive('clientpanel.client'),
 
             },
             {

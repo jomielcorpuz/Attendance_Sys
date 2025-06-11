@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/worksheets', [WorksheetController::class, 'index'])->name('worksheetpanel.worksheet');
 
     Route::get('/clients', [ClientController::class, 'index'])->name('clientpanel.client');
+    Route::post('/clients', [ClientController::class, 'storeClient'])->name('client.store');
     Route::get('/api/clients', [ApiClientController::class, 'index'])->name('api.client');
 
 

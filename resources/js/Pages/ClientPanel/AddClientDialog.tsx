@@ -13,32 +13,36 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/Components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
     name: z.string().min(1, "Client name is required"),
-    details: z.string().min(1, "Client description is required")
+    description: z.string().min(1, "Client description is required"),
+    status: z.string().min(1, "Status description is required")
 });
 
-interface Purok {
+interface Client {
     id?: number;
-    purok_name: string;
-    details: string;
+    name: string;
+    status: string;
+    description: string;
 }
 
-function AddClientDialog({ purok, onSuccess }: { purok?: Purok; onSuccess?: () => void }) {
+function AddClientDialog({ clients, onSuccess }: { clients?: Client; onSuccess?: () => void }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [processing, setProcessing] = React.useState(false);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            purok_name: '',
-            details: ''
+            name: '',
+            description: '',
+            status: ''
         }
     });
 
@@ -46,19 +50,19 @@ function AddClientDialog({ purok, onSuccess }: { purok?: Purok; onSuccess?: () =
 
     // Populate form if editing
     useEffect(() => {
-        if (purok) {
-            form.reset(purok);
+        if (clients) {
+            form.reset(clients);
         } else {
             form.reset({
-                purok_name: '',
-                details: ''
+                name: '',
+                description: ''
             });
         }
-    }, [purok, isOpen]);
+    }, [clients, isOpen]);
 
     const onSubmit = (data: any) => {
-        const url = purok ? `/purok/${purok.id}` : "/purok";
-        const method = purok ? 'put' : 'post';
+        const url = clients ? `/clients/${clients.id}` : "/clients";
+        const method = clients ? 'put' : 'post';
 
         setProcessing(true);
         router[method](url, data, {
@@ -80,23 +84,23 @@ function AddClientDialog({ purok, onSuccess }: { purok?: Purok; onSuccess?: () =
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                {purok ? (
+                {clients ? (
                     <Button variant="outline"><SquarePen color='blue' /> Edit</Button>
                 ) : (
-                    <Button><Plus /> Add Worksheet</Button>
+                    <Button><Plus /> Add Client</Button>
                 )}
             </DialogTrigger>
 
             <DialogContent>
-                <DialogTitle>{purok ? "Edit Worksheet" : "Add Worksheet"}</DialogTitle>
+                <DialogTitle>{clients ? "Edit Worksheet" : "Add Worksheet"}</DialogTitle>
                 <Separator />
                 <Form {...form}>
                     <FormField
                         control={form.control}
-                        name="purok_name"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Purok Name</FormLabel>
+                                <FormLabel>Client Name</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Enter Name" {...field} />
                                 </FormControl>
@@ -106,7 +110,33 @@ function AddClientDialog({ purok, onSuccess }: { purok?: Purok; onSuccess?: () =
                     />
                     <FormField
                         control={form.control}
-                        name="details"
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Status</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select status" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+
+                                        <SelectItem value="Active" >Active</SelectItem>
+                                        <SelectItem value="Inactive" >Inactive</SelectItem>
+                                        <SelectItem value="Banned" >Banned</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="description"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Details</FormLabel>
@@ -127,7 +157,7 @@ function AddClientDialog({ purok, onSuccess }: { purok?: Purok; onSuccess?: () =
                                     <Loader2 className='mr-2 w-4 h-4 animate-spin' />
                                     Saving...
                                 </>
-                            ) : purok ? ("Update") : ("Save")}
+                            ) : clients ? ("Update") : ("Save")}
                         </Button>
                         <Button type="button" variant='outline' onClick={() => setIsOpen(false)}>Cancel</Button>
                     </div>
